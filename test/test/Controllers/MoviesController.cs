@@ -21,14 +21,31 @@ namespace test.Controllers
         //}
 
         // GET: Movies
-        public ActionResult Index(string searchString)
+        public ActionResult Index(string searchString, string movieGenre)
         {
+            var GenreList = new List<string>();
+
+            var GenreQuery = from g in db.Movies
+                             orderby g.Genre
+                             select g.Genre;
+
+            GenreList.AddRange(GenreQuery.Distinct());
+            ViewBag.movieGenre = new SelectList(GenreList);
+
+            //string searchString = id;
             var movies = from m in db.Movies
                          select m;
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 movies = movies.Where(s => s.Title.Contains(searchString));
             }
+
+            if (!String.IsNullOrEmpty(movieGenre))
+            {
+                movies = movies.Where(s => s.Genre.Contains(movieGenre));
+            }
+
             return View(movies);
         }
 
